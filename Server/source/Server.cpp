@@ -9,7 +9,7 @@ int main()
      if(!server.init(2525))
          return EXIT_FAILURE;
 
-     server.run();
+     server.run(); 
 
      return EXIT_SUCCESS;
 }

@@ -2,6 +2,7 @@
 
 ServerNetwork::ServerNetwork() 
 {  
+    m_clients.reserve(25);
 }
 
 ServerNetwork::~ServerNetwork()
@@ -25,10 +26,19 @@ bool ServerNetwork::init(unsigned short port)
 void ServerNetwork::run()
 {
     std::thread connection(&ServerNetwork::connectClient, this);
-    managePackets();
+
+    while (true)
+    {
+        for (std::size_t position = 0; auto & client : m_clients)
+        {
+            receivePacket(client.get(), position);
+            position++;
+        }
+        std::this_thread::sleep_for((std::chrono::milliseconds)100);
+    }
 }
 
-//                                                                          Private section
+//                                                                      Private section
 
 void ServerNetwork::connectClient()
 {
@@ -50,72 +60,41 @@ void ServerNetwork::connectClient()
     }
 }
 
-void ServerNetwork::disconnectClient(sf::TcpSocket* socket_pointer, size_t position)
+void ServerNetwork::disconnectClient(sf::TcpSocket* socket, size_t position)
 {
-    std::cout << "Client " << socket_pointer->getRemoteAddress() << ":" << socket_pointer->getRemotePort() << " disconnected\n";
-    socket_pointer->disconnect();
+    std::cout << "Client " << socket->getRemoteAddress() << ":" << socket->getRemotePort() << " disconnected\n";
+    socket->disconnect();
 
-    auto it = m_clients.begin();
-    std::advance(it, position);
-
-    m_clients.erase(it);
+    if (position < m_clients.size())
+    {
+        m_clients[position] = std::move(m_clients.back());
+        m_clients.pop_back();
+    }
 }
 
-void ServerNetwork::sendOutPacket(sf::TcpSocket* sender, sf::Packet& packet)
+void ServerNetwork::sendOutPacket(sf::Packet& packet, sf::TcpSocket* socket)
 {
-    for (auto& c : m_clients) 
+    for (auto& client : m_clients) 
     {
-        sf::TcpSocket* client = c.get();
-
-        if (client != sender)
+        if (client.get() != socket) 
         {
-            if (client->send(packet) != sf::Socket::Done)
-            {
-                std::cout << "Could not send packet in chat\n";
-            }
+            if (client->send(packet) != sf::Socket::Done) 
+                std::cout << "Could not send packet in chat\n";           
         }
     }
 }
 
-void ServerNetwork::receivePacket(sf::TcpSocket* client, size_t iterator) 
+void ServerNetwork::receivePacket(sf::TcpSocket* socket, std::size_t position) 
 {
     sf::Packet packet;
 
-    if (client->receive(packet) == sf::Socket::Disconnected)
-    {
-        disconnectClient(client, iterator);
-    }
-    else 
-    {
+    if (socket->receive(packet) == sf::Socket::Disconnected)   
+        disconnectClient(socket, position);   
+    else    
         if (packet.getDataSize() > 0) 
         {
-            // std::string received_message;
-            // packet >> received_message;
-            // packet.clear();
-            // packet << received_message << client->getRemoteAddress().toString() << client->getRemotePort();
+            packet << socket->getRemoteAddress().toString() << socket->getRemotePort();
 
-            packet << client->getRemoteAddress().toString() << client->getRemotePort();
-
-            sendOutPacket(client, packet);
-            // std::cout << client->getRemoteAddress().toString() << ":" << client->getRemotePort() << " '" << received_message << "'\n"; !!! -> For server console only
-        }
-    }
+            sendOutPacket(packet, socket);
+        }   
 }
-
-void ServerNetwork::managePackets() 
-{
-    while (true)
-    {
-        size_t iterator = 0;
-
-        for (auto& client : m_clients) 
-        {
-            receivePacket(client.get(), iterator);
-            iterator++;
-        }
-
-        std::this_thread::sleep_for((std::chrono::milliseconds)100);
-    }
-}
-
-

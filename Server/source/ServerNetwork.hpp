@@ -4,14 +4,13 @@
 #include <SFML/Network.hpp>
 
 #include <thread>
-#include <list>
+#include <vector>
 #include <chrono>
 #include <string>
 #include <memory>
 
 class ServerNetwork
 {
-    
 public:
     ServerNetwork();
     ~ServerNetwork();
@@ -22,13 +21,11 @@ public:
 
 private:
     void connectClient();
-    void disconnectClient(sf::TcpSocket*, size_t);
+    void disconnectClient(sf::TcpSocket* socket, std::size_t position);
 
-    void receivePacket(sf::TcpSocket*, size_t);
-    void sendOutPacket(sf::TcpSocket* sender, sf::Packet& packet);
+    void receivePacket(sf::TcpSocket* socket, std::size_t position);
+    void sendOutPacket(sf::Packet& packet, sf::TcpSocket* socket);
 
-    void managePackets();
-
-    sf::TcpListener                           m_listener;
-    std::list<std::unique_ptr<sf::TcpSocket>> m_clients;
+    sf::TcpListener                             m_listener;
+    std::vector<std::unique_ptr<sf::TcpSocket>> m_clients;
 };
