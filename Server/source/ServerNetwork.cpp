@@ -39,7 +39,6 @@ void ServerNetwork::run()
 }
 
 //                                                                      Private section
-
 void ServerNetwork::connectClient()
 {
     while (true) 
