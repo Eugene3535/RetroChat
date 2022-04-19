@@ -17,7 +17,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 add_executable(
  ${PROJECT_NAME}
- source/main.cpp
+ Server/source/main.cpp
+ Server/source/ServerNetwork.cpp
+)
+
+add_executable(
+ ${PROJECT_NAME}
+ Client/source/main.cpp
+ Client/source/ClientNetwork.cpp
 )
 
 target_link_libraries(
