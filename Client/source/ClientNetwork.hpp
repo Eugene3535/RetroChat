@@ -12,13 +12,14 @@ public:
      ClientNetwork();
 
      bool connect(const sf::IpAddress& address, unsigned short port);
-     void receivePackets(sf::TcpSocket *);
-     void sendPacket(sf::Packet &);
      void run();
 
 private:
-    sf::TcpSocket socket;
-    sf::Packet last_packet;
+    void receivePackets(sf::TcpSocket* socket);
+    void sendPacket(sf::Packet& packet);
 
-    bool isConnected = false;
+    sf::TcpSocket m_socket;
+    sf::Packet    m_last_packet;
+
+    bool m_isConnected;
 };
