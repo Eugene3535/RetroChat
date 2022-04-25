@@ -53,7 +53,7 @@ void ServerNetwork::connectClient()
         }
         else
         {
-            std::cout << "Server m_listener error, restart the server\n";
+            std::cout << "Server listener error, restart the server\n";
             break;
         }
     }
@@ -65,10 +65,9 @@ void ServerNetwork::disconnectClient(sf::TcpSocket* socket, size_t position)
     socket->disconnect();
 
     if (position < m_clients.size())
-    {
-        m_clients[position] = std::move(m_clients.back());
-        m_clients.pop_back();
-    }
+        std::swap(m_clients[position], m_clients.back());   
+    
+    m_clients.pop_back();
 }
 
 void ServerNetwork::sendOutPacket(sf::Packet& packet, sf::TcpSocket* socket)
