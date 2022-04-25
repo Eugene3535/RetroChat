@@ -2,8 +2,8 @@ Simple server-client retro-style application
 
 In order to compile this project you will need to:
 
-have CMake installed(https://cmake.org)
-have any generator(like MSVS or MinGW) 
+have CMake installed(https://cmake.org);
+have any generator(like MSVS or MinGW);
 
 mkdir external
 cd external
