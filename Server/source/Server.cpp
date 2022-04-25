@@ -1,15 +1,40 @@
-#include "servernetwork.hpp"
+//#include "servernetwork.hpp"
+//
+//#include <iostream>
+//
+//int main()
+//{
+//     ServerNetwork server;
+//
+//     if(!server.init(2525))
+//         return EXIT_FAILURE;
+//
+//     server.run(); 
+//
+//     return EXIT_SUCCESS;
+//}
 
-#include <iostream>
+#include <FL/Fl.h>
+#include <FL/Fl_Window.h>
+#include <FL/Fl_Button.h>
+
+void button_callback(Fl_Widget* o, void*)
+{
+	Fl_Button* button = (Fl_Button*)o;
+	button->label("Pressed!");
+	button->redraw();
+}
 
 int main()
 {
-     ServerNetwork server;
+	Fl_Window window(300, 200, "Test");
 
-     if(!server.init(2525))
-         return EXIT_FAILURE;
+	window.begin();
+	Fl_Button button(10, 150, 100, 30, "Press me");
+	window.end();
 
-     server.run(); 
+	button.callback(button_callback);
 
-     return EXIT_SUCCESS;
+	window.show();
+	return Fl::run();
 }

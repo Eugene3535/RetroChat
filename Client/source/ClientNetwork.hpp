@@ -11,7 +11,9 @@ class ClientNetwork
 public:
      ClientNetwork();
 
+     [[nodiscard]]
      bool connect(const sf::IpAddress& address, unsigned short port);
+
      void run();
 
 private:
