@@ -3,24 +3,19 @@ cmake_minimum_required(VERSION 3.22)
 set(PROJECT_NAME Server)
 project(${PROJECT_NAME})
 
-include(FetchContent)
 set(BUILD_SHARED_LIBS OFF)
-FetchContent_Declare(
- SFML
- GIT_REPOSITORY https://github.com/SFML/SFML.git
- GIT_TAG 2.5.1
-)
-FetchContent_MakeAvailable(SFML)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED true)
+include_directories(external/SFML-2.5.1/include)
+include_directories(external/FLTK-1.3.8)
+	
+set(SOURCES
+		source/main.cpp
+		source/ServerNetwork.cpp
+	)
 
-add_executable(
- ${PROJECT_NAME}
- source/Server.cpp
- source/ServerNetwork.cpp
-)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
+add_subdirectory(external/SFML-2.5.1)
 target_link_libraries(
  ${PROJECT_NAME}
  sfml-graphics
@@ -29,3 +24,16 @@ target_link_libraries(
  sfml-audio
  sfml-network
 )
+
+add_subdirectory(external/FLTK-1.3.8)
+target_link_libraries(
+ ${PROJECT_NAME}
+ fltk
+ uuid
+ ole32
+ comctl32
+ comdlg32
+ gdi32
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}../../bin/)
